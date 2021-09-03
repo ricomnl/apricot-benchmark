@@ -1,5 +1,14 @@
 # Apricot Benchmark
+## Setup
+```
+# Setup poetry
+make .venv
 
+# Run streamlit
+make run
+```
+
+## Project
 Goal: compare all the functions and optimizers across a few dozen data sets
 Data sets: https://epistasislab.github.io/pmlb/#Dataset_format
 
