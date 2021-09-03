@@ -11,6 +11,7 @@ pmlb = "^1.0.1"
 scikit-learn = "^0.24.2"
 streamlit = "^0.88.0"
 PyYAML = "^5.4.1"
+watchdog = "^2.1.5"
 
 [tool.poetry.dev-dependencies]
 
