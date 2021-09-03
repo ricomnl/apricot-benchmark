@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "apricot-benchmark"
+version = "0.1.0"
+description = ""
+authors = ["Rico Meinl <rmeinl97@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+apricot-select = "^0.6.1"
+pmlb = "^1.0.1"
+scikit-learn = "^0.24.2"
+streamlit = "^0.88.0"
+PyYAML = "^5.4.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
