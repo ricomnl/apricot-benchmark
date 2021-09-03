@@ -27,8 +27,8 @@ def main():
 
     pmlb_data = pd.read_csv("metadata/Penn Machine Learning Benchmarks.csv")
     # 417 rows
-    pmlb_data = pmlb_data[pmlb_data["n_observations"] > 10_000]
-    # 146 rows
+    pmlb_data = pmlb_data[pmlb_data["n_observations"] > 100]
+    # 384 rows
     pmlb_data = pmlb_data[~pmlb_data["Dataset"].str.contains("feynman")]
     # 26 rows
     pmlb_data = pmlb_data.reset_index(drop=True)

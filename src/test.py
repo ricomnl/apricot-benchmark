@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 pmlb_data = pd.read_csv("metadata/Penn Machine Learning Benchmarks.csv")
 # 417 rows
-pmlb_data = pmlb_data[pmlb_data["n_observations"] > 10_000]
+pmlb_data = pmlb_data[pmlb_data["n_observations"] > 100]
 # 146 rows
 pmlb_data = pmlb_data[~pmlb_data["Dataset"].str.contains("feynman")]
 # 26 rows
