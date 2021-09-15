@@ -1,12 +1,17 @@
-import matplotlib.pyplot as plt
-
 import time
-import torch
-import numpy as np
 
+import matplotlib.pyplot as plt
+import numpy as np
+import numba
+import torch
+from torch.profiler import profile, record_function, ProfilerActivity
 from sklearn.datasets import fetch_covtype
 
 from python_reimpl import fit
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cpu")
+
 
 def calculate_gains_torch(X, gains, current_values, idxs, current_concave_values_sum):
     for i in range(idxs.size(0)):
@@ -15,8 +20,9 @@ def calculate_gains_torch(X, gains, current_values, idxs, current_concave_values
     gains -= current_concave_values_sum
     return gains
 
-def calculate_gains_torch_mat(X, current_values, current_concave_values_sum):
-    return torch.sub(torch.sqrt(current_values + X).sum(dim=1), current_concave_values_sum)
+
+def calculate_gains_torch_mat(X, current_values, idxs, current_concave_values_sum):
+    return torch.sub(torch.sqrt(current_values + X[idxs, :]).sum(dim=1), current_concave_values_sum)
 
 
 def fit_torch(X, k):    
@@ -27,16 +33,17 @@ def fit_torch(X, k):
     ranking = []
     total_gains = []
 
-    mask = torch.zeros(n)
-    current_values = torch.zeros(d)
+    mask = torch.zeros(n, device=device)
+    current_values = torch.zeros(d, device=device)
     current_concave_values = torch.sqrt(current_values)
     current_concave_values_sum = torch.sum(current_concave_values)
 
-    idxs = torch.arange(n)
+    idxs = torch.arange(n, device=device)
 
-    gains = torch.zeros(idxs.shape[0], dtype=torch.float64)
+    # gains = torch.zeros(idxs.shape[0], dtype=torch.float64, device=device)
     while cost < k:
-        gains = calculate_gains_torch(X, gains, current_values, idxs, current_concave_values_sum)
+        gains = calculate_gains_torch_mat(X, current_values, idxs, current_concave_values_sum)
+        # gains = calculate_gains_torch_mat(X, gains, current_values, idxs, current_concave_values_sum)
 
         idx = torch.argmax(gains)
         best_idx = idxs[idx]
@@ -54,8 +61,8 @@ def fit_torch(X, k):
         current_concave_values = torch.sqrt(current_values)
         current_concave_values_sum = current_concave_values.sum()
 
-        ranking.append(best_idx)
-        total_gains.append(gain)
+        ranking.append(best_idx.item())
+        total_gains.append(gain.item())
 
         mask[best_idx] = 1
         idxs = torch.where(mask == 0)[0]
@@ -65,21 +72,26 @@ def fit_torch(X, k):
 if __name__ == "__main__":
     digits_data = fetch_covtype()
 
-    X_digits = np.abs(digits_data.data)[:1000]
-    X_digits_torch = torch.from_numpy(X_digits)
+    X_digits = np.abs(digits_data.data)#[:10000]
+    X_digits_torch = torch.from_numpy(X_digits).to(device)
 
-    k = 100
+    k = 1000
 
     # Parallelized python
     tic = time.time()
     ranking0, gains0 = fit(X=X_digits, k=k)
     toc0 = time.time() - tic
+    print(f"Numba Python took {toc0}s")
 
     # Torch (GPU)
     tic = time.time()
+    # with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], profile_memory=False, record_shapes=False) as prof:
+        # with record_function("fit_torch"):
     ranking1, gains1 = fit_torch(X=X_digits_torch, k=k)
     toc1 = time.time() - tic
+    print(f"Torch took {toc1}s")
 
+    # Random
     tic = time.time()
     idxs = np.random.choice(X_digits.shape[0], replace=False, size=k)
     X_subset = X_digits[idxs]
@@ -103,4 +115,6 @@ if __name__ == "__main__":
     plt.ylabel("Time (s)", fontsize=12)
     plt.xticks(range(3), ["Naive Numba", "Naive Torch", "Random"], rotation=90) 
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig("results/numba_vs_torch.png")
+    # plt.savefig("results/numba_vs_torch_cpu.png")

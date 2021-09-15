@@ -74,6 +74,7 @@ if __name__ == "__main__":
     tic = time.time()
     ranking0, gains0 = fit(X=X_digits, k=k)
     toc0 = time.time() - tic
+    print(f"Numba Python took {toc0}s")
 
     tic = time.time()
     idxs = np.random.choice(X_digits.shape[0], replace=False, size=k)
