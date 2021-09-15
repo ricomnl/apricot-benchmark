@@ -12,6 +12,8 @@ scikit-learn = "^0.24.2"
 streamlit = "^0.88.0"
 PyYAML = "^5.4.1"
 watchdog = "^2.1.5"
+torch = "^1.9.0"
+matplotlib = "^3.4.3"
 
 [tool.poetry.dev-dependencies]
 
