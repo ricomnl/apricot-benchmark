@@ -22,6 +22,7 @@ def calculate_gains_torch(X, gains, current_values, idxs, current_concave_values
 
 
 def calculate_gains_torch_mat(X, current_values, idxs, current_concave_values_sum):
+    # TODO: try masking approach, add the whole matrix and multiply with mask
     return torch.sub(torch.sqrt(current_values + X[idxs, :]).sum(dim=1), current_concave_values_sum)
     # torch.sum(torch.sqrt(current_values + X[idxs, :]), dim=1, out=gains)
     # return torch.sub(gains, current_concave_values_sum, out=gains)

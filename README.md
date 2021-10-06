@@ -16,7 +16,7 @@ Compare optimizers using the objective function that they're attempting to optim
 Can't really compare different objective functions that easily. 
     (1) for each objective/optimizer, look at how many examples are chosen from the smallest class, and
     (2) train ML models using each subset and seeing how well they can make predictions on the test set.
-    (3) compare the performance of the models w.r. time and memory (implement speedups)
+    (3) compare the performance of the models w.r.t. time and memory (implement speedups)
 
 Will the metadata from each data set have some association with which objectives or optimizers perform well, e.g., feature-based functions work well with categorical data but facility location works better when everything is float?
 
