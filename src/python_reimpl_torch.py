@@ -23,7 +23,11 @@ def calculate_gains_torch(X, gains, current_values, idxs, current_concave_values
 
 def calculate_gains_torch_mat(X, current_values, idxs, current_concave_values_sum):
     # TODO: try masking approach, add the whole matrix and multiply with mask
-    return torch.sub(torch.sqrt(current_values + X[idxs, :]).sum(dim=1), current_concave_values_sum)
+    # return torch.sub(torch.sqrt(current_values + X[idxs, :]).sum(dim=1), current_concave_values_sum)
+    mask = torch.zeros((X.shape[0], 1), dtype=torch.bool).to(device)
+    mask[idxs] = 1
+    current_values_sum = (torch.sqrt((current_values + X) * mask)).sum(dim=1)
+    return torch.sub(current_values_sum, current_concave_values_sum)
     # torch.sum(torch.sqrt(current_values + X[idxs, :]), dim=1, out=gains)
     # return torch.sub(gains, current_concave_values_sum, out=gains)
 
@@ -82,7 +86,8 @@ if __name__ == "__main__":
 
     # Parallelized python
     tic = time.time()
-    ranking0, gains0 = fit(X=X_digits, k=k)
+    # ranking0, gains0 = fit(X=X_digits, k=k)
+    gains0 = np.zeros(5)
     toc0 = time.time() - tic
     print(f"Numba Python took {toc0}s")
 
