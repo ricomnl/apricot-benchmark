@@ -138,3 +138,5 @@ dmypy.json
 cython_debug/
 
 datasets/
+models/
+fastText-0.1.0/
